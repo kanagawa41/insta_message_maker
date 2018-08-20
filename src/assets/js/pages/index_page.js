@@ -80,11 +80,13 @@ modules.pages.index = (function () {
     });
 
     $('#make-msg').on('focus', function(){
-      if(modules.helper.execCopy($(this).val())){
-        toastr.success('コピーしました。')
-      }else{
-        toastr.error('コピーできませんでした。')
-      }
+      this.select();
+      // FIXME: クリップボードに改行を含んでコピーできない。
+      // if(modules.helper.execCopy($(this).val())){
+      //   toastr.success('コピーしました。')
+      // }else{
+      //   toastr.error('コピーできませんでした。')
+      // }
     });
   };
 
