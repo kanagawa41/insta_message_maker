@@ -75,8 +75,9 @@ modules.pages.index = (function () {
 
     $('#tag-list').on('change', function() {
       var selected = $(this).val();
-      var tags = $('#tag-' + selected).val();
-      $('#tags').val(tags);
+      $('#tags').val($('#tag-' + selected).val());
+      $('#template-msg').val($('#template-msg-' + selected).val());
+
     });
 
     $('#make-msg').on('focus', function(){
@@ -94,24 +95,20 @@ modules.pages.index = (function () {
    * ストレージの状態を画面に反映
    */
   page.loadSetting = function(){
-    if(!storage.isSet(keys.tag_list)){
-      modules.storage_helper.setDefaultTags(storage);
+    if(!storage.isSet(keys.type_list)){
+      modules.storage_helper.setDefaultTypes(storage);
       toastr.info('タグリストに初期値を設定しました。');
     }
-    const tagList = JSON.parse(storage.get(keys.tag_list));
-    page.createSelectBox({
-        one: tagList['tag1_name'],
-        two: tagList['tag2_name'],
-        three: tagList['tag3_name'],
-        four: tagList['tag4_name'],
-      },
-      'tag-list',
-      'one');
+    const rawtagList = JSON.parse(storage.get(keys.type_list));
 
-    $('#tag-one').val(tagList['tags1']);
-    $('#tag-two').val(tagList['tags2']);
-    $('#tag-three').val(tagList['tags3']);
-    $('#tag-four').val(tagList['tags4']);
+    var typeList = {};
+    rawtagList.forEach(function(val, i){
+      typeList[String(i)] = val['name'];
+      $('#tag-' + String(i)).val(val['name']);
+      $('#template-msg-' + String(i)).val(val['name']);
+    })
+
+    page.createSelectBox(typeList, 'tag-list', '0');
 
     if(!storage.isSet(keys.settings)){
       modules.storage_helper.setDefaultSettings(storage);
@@ -120,18 +117,17 @@ modules.pages.index = (function () {
 
     const settings = JSON.parse(storage.get(keys.settings));
 
-    $('#template-msg').val(settings['template']);
-
     $('#new-line').val(settings['new_line']);
     $('#char-length').text($('#new-line').val().length);
 
-    $('#tag-list').val(settings['tag_list']);
+    $('#tag-list').val(settings['type_list']);
     $('#select-tag-num').val(settings['select_tag_num']);
     $('#tag-per-line').prop("checked", settings['tag_per_line']);
     $('#blank-chk').prop("checked", settings['blank_chk']);
 
-    var tags = $('#tag-' + settings['tag_list']).val();
-    $('#tags').val(tags);
+    $('#tags').val($('#tag-' + settings['type_list']).val());
+    $('#template-msg').val($('#template-msg-' + settings['type_list']).val());
+
 
     $('#emoji').val(settings['emoji']);
   }
@@ -159,9 +155,8 @@ modules.pages.index = (function () {
    */
   page.saveSettings = function(){
     var settings = {
-      template: $('#template-msg').val(),
       new_line: $('#new-line').val(),
-      tag_list: $('#tag-list').val(),
+      type_list: $('#tag-list').val(),
       select_tag_num: $('#select-tag-num').val(),
       tag_per_line: $('#tag-per-line').prop('checked'),
       blank_chk: $('#blank-chk').prop('checked'),
@@ -176,29 +171,20 @@ modules.pages.index = (function () {
    * タグをストレージに保存する
    */
   page.updateTags = function(){
-    const tagList = JSON.parse(storage.get(keys.tag_list));
+    const typeList = JSON.parse(storage.get(keys.type_list));
 
     var strTags = modules.helper.formatTag($('#tags').val());
 
-    switch ($('#tag-list').val()) {
-      case "one":
-        tagList['tags1'] = strTags;
-        break;
-      case "two":
-        tagList['tags2'] = strTags;
-        break;
-      case "three":
-        tagList['tags3'] = strTags;
-        break;
-      case "four":
-        tagList['tags4'] = strTags;
-        break;
-      default:
-        console.log('Jesus!!');
-    }
+    var typeNum = parseInt($('#tag-list').val());
+    typeList.forEach(function(val, i){
+      if(i == typeNum){
+        val['template'] = $('#template-msg').val();
+        val['tags'] = strTags;
+      }
+    })
 
     // 設定の保持
-    storage.set(keys.tag_list, JSON.stringify(tagList));
+    storage.set(keys.type_list, JSON.stringify(tagList));
   }
 
   /**
@@ -228,19 +214,19 @@ modules.pages.index = (function () {
     var rawTagsStr = $('#tags').val();
     rawTagsStr = modules.helper.formatTag(rawTagsStr);
     var tags = null;
-    if(!storage.isSet(keys.tag_list)){
-      const tagList = JSON.parse(storage.get(keys.tag_list));
-      var selectTag = $('#tag-list').val();
-      if(selectTag == 'one'){
-        tags = tagList['tags1'];
-      }else if(selectTag == 'two'){
-        tags = tagList['tags2'];
-      }else if(selectTag == 'three'){
-        tags = tagList['tags3'];
-      }else if(selectTag == 'four'){
-        tags = tagList['tags4'];
-      }
-    }
+
+    // FIXME: 多分この処理は必要ない？
+    // if(!storage.isSet(keys.type_list)){
+    //   var selectTag = parseInt($('#tag-list').val());
+
+    //   const tagList = JSON.parse(storage.get(keys.type_list));
+    //   typeList.forEach(function(val, i){
+    //     if(i == selectTag){
+    //       tags = tagList['tags'];
+    //     }
+    //   });
+    // }
+
     tags = rawTagsStr.substring(1, rawTagsStr.length).split('#');
 
     // タグからランダムに取得する

@@ -8,13 +8,14 @@ modules.storage_helper = (function () {
 
   module.versions = {
     v1_0_0: {name: "v1.0.0"},
+    v1_1_0: {name: "v1.1.0"},
   };
 
   module.namespace = "icm";
 
   module.keys = {
     settings: module.namespace + ".settings",
-    tag_list: module.namespace + ".tag_list",
+    type_list: module.namespace + ".type_list",
     version: module.namespace + ".version",
   };
 
@@ -54,9 +55,8 @@ modules.storage_helper = (function () {
    */
   module.setDefaultSettings = function(storage){
     var data = {
-      template: "##CAP##\n\n##TAGS##",
       new_line: "・",
-      tag_list: "one",
+      type_list_num: 0,
       select_tag_num: "",
       tag_per_line: false,
       random_order: false,
@@ -71,30 +71,37 @@ modules.storage_helper = (function () {
   /**
    * タグのデフォルト値を設定
    */
-  module.setDefaultTags = function(storage){
-    var data = {
-      tag1_name: "タグ1",
-      tags1: "#sample #sample2 #sample3",
-      tag2_name: "タグ2",
-      tags2: "",
-      tag3_name: "タグ3",
-      tags3: "",
-      tag4_name: "タグ4",
-      tags4: "",
+  module.setDefaultTypes = function(storage){
+    /**
+     * タグのデフォルト値を設定
+     */
+    var defaultVal = function(){
+      return {
+        name: "タグ",
+        tags: "#sample #sample2 #sample3",
+        template: "##CAP##\n\n##TAGS##",
+      }
     }
 
+    var data = [
+      defaultVal(),
+      defaultVal(),
+      defaultVal(),
+      defaultVal(),
+    ];
+
     // 設定の保持
-    storage.set(module.keys.tag_list, JSON.stringify(data));
+    storage.set(module.keys.type_list, JSON.stringify(data));
   }
 
   /**
    * タグのデフォルト値を設定
    */
   module.getItem = function(storage, defaultVal=null){
-    var val = storage.getItem(keys.tag_list);
+    var val = storage.getItem(keys.type_list);
     if(!val){ return defaultVal; }
 
-    return JSON.parse(storage.getItem(keys.tag_list));
+    return JSON.parse(storage.getItem(keys.type_list));
   }
 
   return module;
