@@ -26,6 +26,8 @@ var
 
   fs = require('fs'),
 
+  browserSync = require('browser-sync'),
+
   // development mode?
   devBuild = (process.env.NODE_ENV !== 'production'),
 
@@ -114,12 +116,29 @@ gulp.task('scss', ['images', 'font'], function() {
 gulp.task( 'css.min', ['scss'], function() {
     return gulp.src(folder.src + 'assets/scss/*.min.css')
     .pipe( gulp.dest(folder.build + 'assets/css') );
-} );
+});
 
 gulp.task( 'css.image', ['scss'], function() {
     return gulp.src(folder.src + 'assets/scss/origin/images/**')
     .pipe( gulp.dest(folder.build + 'assets/css/images') );
-} );
+});
+
+
+gulp.task('browser-sync', function() {
+  browserSync({
+    server: {
+      baseDir: folder.build,       //対象ディレクトリ
+      index  : "html/index.html"      //インデックスファイル
+    }
+  });
+});
+
+//
+//ブラウザリロード
+//
+gulp.task('bs-reload', function () {
+    browserSync.reload();
+});
 
 // watch for changes
 gulp.task('watch', function() {
@@ -139,9 +158,13 @@ gulp.task('watch', function() {
 
   // font changes
   gulp.watch(folder.src + 'assets/fonts/**/*', ['font']);
+
+  // reload
+  gulp.watch(folder.build + "html/*.html", ['bs-reload']);
+  gulp.watch(folder.build + "assets/**/*", ['bs-reload']);
 });
 
-gulp.task('default', ['run', 'watch']);
+gulp.task('default', ['run', 'watch', 'browser-sync']);
 gulp.task('html', ['ejs']);
 gulp.task('js', ['js.concat']);
 gulp.task('css', ['scss', 'css.min', 'css.image']);
