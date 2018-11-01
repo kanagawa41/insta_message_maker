@@ -19,7 +19,7 @@ modules.storage_helper = (function () {
     version: module.namespace + ".version",
   };
 
-  module.version = module.versions.v1_0_0.name;
+  module.version = module.versions.v1_1_0.name;
 
   /**
    * ローカルストレージを安全に取り出す

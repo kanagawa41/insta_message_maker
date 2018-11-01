@@ -77,7 +77,6 @@ modules.pages.index = (function () {
       var selected = $(this).val();
       $('#tags').val($('#tag-' + selected).val());
       $('#template-msg').val($('#template-msg-' + selected).val());
-
     });
 
     $('#make-msg').on('focus', function(){
@@ -104,8 +103,14 @@ modules.pages.index = (function () {
     var typeList = {};
     rawtagList.forEach(function(val, i){
       typeList[String(i)] = val['name'];
-      $('#tag-' + String(i)).val(val['name']);
-      $('#template-msg-' + String(i)).val(val['name']);
+
+      var tagId = '#tag-' + String(i);
+      $('#page-wrapper').html('<input type="hidden" name="' + tagId + '" id="' + tagId + '">');
+      $(tagId).val(val['name']);
+
+      var templateId = '#template-msg-' + String(i);
+      $('#page-wrapper').html('<input type="hidden" name="' + templateId + '" id="' + templateId + '">');
+      $(templateId).val(val['template']);
     })
 
     page.createSelectBox(typeList, 'tag-list', '0');
@@ -116,9 +121,8 @@ modules.pages.index = (function () {
     }
 
     const settings = JSON.parse(storage.get(keys.settings));
-
     $('#new-line').val(settings['new_line']);
-    $('#char-length').text($('#new-line').val().length);
+    $('#char-length').text(settings['new_line'].length);
 
     $('#tag-list').val(settings['type_list']);
     $('#select-tag-num').val(settings['select_tag_num']);
