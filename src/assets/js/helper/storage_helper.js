@@ -45,10 +45,12 @@ modules.storage_helper = (function () {
    * バージョンの検証
    */
   module.validVersion = function(storage){
-    var version = JSON.parse(storage.get(module.keys.settings)).version;
+    if(!storage.isSet(module.keys.settings)){ return; }
+
+    var version = storage.get(module.keys.settings).version;
     if(!version || version == module.versions.v1_0_0) {
-      var jsonStr = JSON.stringify(storage.get(modules.storage_helper.namespace));
-      modules.version_helper(jsonStr);
+      var jsonStr = storage.get(modules.storage_helper.namespace);
+      modules.version_helper.v1_0_0_to_v1_1_0(jsonStr);
     }
   }
 
@@ -77,7 +79,7 @@ modules.storage_helper = (function () {
     }
 
     // 設定の保持
-    storage.set(module.keys.settings, JSON.stringify(data));
+    storage.set(module.keys.settings, data);
   }
 
   /**
@@ -103,17 +105,7 @@ modules.storage_helper = (function () {
     ];
 
     // 設定の保持
-    storage.set(module.keys.mode_list, JSON.stringify(data));
-  }
-
-  /**
-   * タグのデフォルト値を設定
-   */
-  module.getItem = function(storage, defaultVal=null){
-    var val = storage.getItem(keys.mode_list);
-    if(!val){ return defaultVal; }
-
-    return JSON.parse(storage.getItem(keys.mode_list));
+    storage.set(module.keys.mode_list, data);
   }
 
   return module;

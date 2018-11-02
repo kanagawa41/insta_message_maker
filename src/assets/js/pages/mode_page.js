@@ -4,21 +4,23 @@
 var modules = modules || {};
 modules.pages = modules.pages || {};
 
-modules.pages.tag = (function () {
+modules.pages.mode = (function () {
   var page = {}
 
   var storage = null;
-  try{
-    storage = $.localStorage;
-    modules.storage_helper.validVersion(storage);
-  }catch(e){
-    console.log(e);
-    toastr.error('ローカルストレージが使用できないため、機能が正しく動きません。');
-  }
 
   const strageKeys = modules.storage_helper.keys;
 
   page.init = function(){
+    try{
+      storage = $.localStorage;
+      // modules.storage_helper.validVersion(storage);
+    }catch(e){
+      console.log(e);
+      toastr.error('ローカルストレージが使用できないため、機能が正しく動きません。');
+      return;
+    }
+
     page.initLayout();
 
     page.initAction();
@@ -36,7 +38,7 @@ modules.pages.tag = (function () {
     }
 
     // HACKME: layoutとloadsettingが一色単になりがち
-    const modeList = JSON.parse(storage.get(strageKeys.mode_list));
+    const modeList = storage.get(strageKeys.mode_list);
     modeList.forEach(function(val, i){
       var html = '';
       html += '<div id="mode-' + i + '" class="col-12" style="padding-bottom: 0.5em;">';
@@ -64,7 +66,7 @@ modules.pages.tag = (function () {
    */
   page.initAction = function(){
     $('#regist-btn').on('click', function(){
-      const modeList = JSON.parse(storage.get(strageKeys.mode_list));
+      const modeList = storage.get(strageKeys.mode_list);
 
       modeList.forEach(function(val, i){
         var mode = $('#mode-' + i);
@@ -93,7 +95,7 @@ modules.pages.tag = (function () {
    * 設定をストレージに保存する
    */
   page.saveSettings = function(){
-    const modeList = JSON.parse(storage.get(strageKeys.mode_list));
+    const modeList = storage.get(strageKeys.mode_list);
 
     modeList.forEach(function(val, i){
       var mode = $('#mode-' + i);
@@ -103,7 +105,7 @@ modules.pages.tag = (function () {
     });
 
     // 設定の保持
-    storage.set(strageKeys.mode_list, JSON.stringify(modeList));
+    storage.set(strageKeys.mode_list, modeList);
   }
 
   return page;

@@ -8,17 +8,19 @@ modules.pages.index = (function () {
   var page = {}
 
   var storage = null;
-  try{
-    storage = $.localStorage;
-    modules.storage_helper.validVersion(storage);
-  }catch(e){
-    console.log(e);
-    toastr.error('ローカルストレージが使用できないため、機能が正しく動きません。');
-  }
 
   const keys = modules.storage_helper.keys;
 
   page.init = function(){
+    try{
+      storage = $.localStorage;
+      // modules.storage_helper.validVersion(storage);
+    }catch(e){
+      console.log(e);
+      toastr.error('ローカルストレージが使用できないため、機能が正しく動きません。');
+      return;
+    }
+
     page.initLayout();
 
     page.initAction();
@@ -102,7 +104,7 @@ modules.pages.index = (function () {
       modules.storage_helper.setDefaultTypes(storage);
       toastr.info('タグリストに初期値を設定しました。');
     }
-    const rawMagList = JSON.parse(storage.get(keys.mode_list));
+    const rawMagList = storage.get(keys.mode_list);
 
     var modeList = {};
     rawMagList.forEach(function(val, i){
@@ -110,7 +112,7 @@ modules.pages.index = (function () {
 
       var tagId = 'tag-' + String(i);
       $('#page-wrapper').append('<input type="hidden" name="' + tagId + '" id="' + tagId + '">');
-      $('#' + tagId).val(val['name']);
+      $('#' + tagId).val(val['tags']);
 
       var templateId = 'template-msg-' + String(i);
       $('#page-wrapper').append('<input type="hidden" name="' + templateId + '" id="' + templateId + '">');
@@ -124,16 +126,16 @@ modules.pages.index = (function () {
       toastr.info('基本値に初期値を設定しました。');
     }
 
-    const settings = JSON.parse(storage.get(keys.settings));
+    const settings = storage.get(keys.settings);
     $('#new-line').val(settings['new_line']);
     $('#char-length').text(settings['new_line'].length);
     $('#mode-list').val(settings['mode_list_num']);
+    $('#select-tag-num').val(settings['select_tag_num']);
     $('#tag-per-line').prop("checked", settings['tag_per_line']);
     $('#blank-chk').prop("checked", settings['blank_chk']);
 
     $('#tags').val($('#tag-' + settings['mode_list_num']).val());
     $('#template-msg').val($('#template-msg-' + settings['mode_list_num']).val());
-
 
     $('#emoji').val(settings['emoji']);
   }
@@ -163,20 +165,21 @@ modules.pages.index = (function () {
     var settings = {
       new_line: $('#new-line').val(),
       mode_list_num: $('#mode-list').val(),
+      select_tag_num: $('#select-tag-num').val(),
       tag_per_line: $('#tag-per-line').prop('checked'),
       blank_chk: $('#blank-chk').prop('checked'),
       emoji: modules.helper.excludeBlank($('#emoji').val()),
     }
 
     // 設定の保持
-    storage.set(keys.settings, JSON.stringify(settings));
+    storage.set(keys.settings, settings);
   }
 
   /**
    * タグをストレージに保存する
    */
   page.updateTags = function(){
-    const modeList = JSON.parse(storage.get(keys.mode_list));
+    const modeList = storage.get(keys.mode_list);
 
     var strTags = modules.helper.formatTag($('#tags').val());
 
@@ -189,7 +192,7 @@ modules.pages.index = (function () {
     })
 
     // 設定の保持
-    storage.set(keys.mode_list, JSON.stringify(modeList));
+    storage.set(keys.mode_list, modeList);
   }
 
   /**

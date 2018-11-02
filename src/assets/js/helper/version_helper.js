@@ -20,7 +20,7 @@ modules.version_helper = (function () {
     }
   **/
   module.v1_0_0_to_v1_1_0 = function(oldJsonStr){
-    oldStrage = JSON.parse(oldJsonStr);
+    var oldStrage = JSON.parse(oldJsonStr);
 
     var tagList = oldStrage['tag_list'];
     var rawSettings = oldStrage['settings'];

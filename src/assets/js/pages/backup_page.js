@@ -8,17 +8,19 @@ modules.pages.backup = (function () {
   var page = {}
 
   var storage = null;
-  try{
-    storage = $.localStorage;
-    // modules.storage_helper.validVersion(storage);
-  }catch(e){
-    console.log(e);
-    toastr.error('ローカルストレージが使用できないため、機能が正しく動きません。');
-  }
 
   const keys = modules.storage_helper.keys;
 
   page.init = function(){
+    try{
+      storage = $.localStorage;
+      // modules.storage_helper.validVersion(storage);
+    }catch(e){
+      console.log(e);
+      toastr.error('ローカルストレージが使用できないため、機能が正しく動きません。');
+      return;
+    }
+
     page.initLayout();
 
     page.initAction();
@@ -68,7 +70,7 @@ modules.pages.backup = (function () {
 
       $('#storage').val(JSON.stringify(storage.get(modules.storage_helper.namespace)));
 
-      toastr.success('ストレージ状態を初期化しました。');
+      toastr.success('ストレージ状態を初期化しました。a');
     });
 
   };
