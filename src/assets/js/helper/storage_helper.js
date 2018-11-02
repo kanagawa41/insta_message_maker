@@ -15,7 +15,7 @@ modules.storage_helper = (function () {
 
   module.keys = {
     settings: module.namespace + ".settings",
-    type_list: module.namespace + ".type_list",
+    mode_list: module.namespace + ".mode_list",
     version: module.namespace + ".version",
   };
 
@@ -56,8 +56,7 @@ modules.storage_helper = (function () {
   module.setDefaultSettings = function(storage){
     var data = {
       new_line: "・",
-      type_list_num: 0,
-      select_tag_num: "",
+      mode_list_num: "0",
       tag_per_line: false,
       random_order: false,
       emoji: "",
@@ -77,7 +76,7 @@ modules.storage_helper = (function () {
      */
     var defaultVal = function(){
       return {
-        name: "タグ",
+        name: "モード",
         tags: "#sample #sample2 #sample3",
         template: "##CAP##\n\n##TAGS##",
       }
@@ -91,17 +90,17 @@ modules.storage_helper = (function () {
     ];
 
     // 設定の保持
-    storage.set(module.keys.type_list, JSON.stringify(data));
+    storage.set(module.keys.mode_list, JSON.stringify(data));
   }
 
   /**
    * タグのデフォルト値を設定
    */
   module.getItem = function(storage, defaultVal=null){
-    var val = storage.getItem(keys.type_list);
+    var val = storage.getItem(keys.mode_list);
     if(!val){ return defaultVal; }
 
-    return JSON.parse(storage.getItem(keys.type_list));
+    return JSON.parse(storage.getItem(keys.mode_list));
   }
 
   return module;

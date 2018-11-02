@@ -15,7 +15,7 @@ modules.pages.tag = (function () {
     toastr.error('ローカルストレージが使用できないため、機能が正しく動きません。');
   }
 
-  const keys = modules.storage_helper.keys;
+  const strageKeys = modules.storage_helper.keys;
 
   page.init = function(){
     page.initLayout();
@@ -29,6 +29,31 @@ modules.pages.tag = (function () {
    * レイアウトの初期処理
    */
   page.initLayout = function(){
+    if(!storage.isSet(strageKeys.mode_list)){
+      modules.storage_helper.setDefaultTypes(storage);
+      toastr.info('初期値を設定しました。');
+    }
+
+    // HACKME: layoutとloadsettingが一色単になりがち
+    const modeList = JSON.parse(storage.get(strageKeys.mode_list));
+    modeList.forEach(function(val, i){
+      var html = '';
+      html += '<div id="mode-' + i + '" class="col-12" style="padding-bottom: 0.5em;">';
+      html += '  <div class="row" style="padding-bottom: 0.5em;">';
+      html += '    <div class="col-5">';
+      html += '      <input name="name" placeholder="タグ名" type="text" value="' + val['name'] + '">';
+      html += '    </div>';
+      html += '  </div>';
+      html += '  <h3 class="title">Template</h4>';
+      html += '  <textarea name="template" placeholder="特殊記号などを含むテンプレートを記入してください。" rows="3">' + val['template'] + '</textarea>';
+      html += '  <h3 class="title">Tag</h3 class="title">';
+      html += '  <textarea name="tags" placeholder="シャープ(#)か空白区切りでタグを入力" rows="3">' + val['tags'] + '</textarea>';
+      html += '  <hr>';
+      html += '</div>';
+
+      $('#modes').append(html);
+    });
+
     // var text = $('#header h1 a').text();
     // $('#header h1 a').html(modules.helper.eachTopCharUpper(text, '<span style="color: #21b2a6">', '</span>'));
   };
@@ -38,17 +63,14 @@ modules.pages.tag = (function () {
    */
   page.initAction = function(){
     $('#regist-btn').on('click', function(){
-      $('#tag1-name').val(getVal($('#tag1-name').val(), 'タグ1'));
-      $('#tags1').val(modules.helper.formatTag($('#tags1').val()));
+      const modeList = JSON.parse(storage.get(strageKeys.mode_list));
 
-      $('#tag2-name').val(getVal($('#tag2-name').val(), 'タグ2'));
-      $('#tags2').val(modules.helper.formatTag($('#tags2').val()));
+      modeList.forEach(function(val, i){
+        var mode = $('#mode-' + i);
 
-      $('#tag3-name').val(getVal($('#tag3-name').val(), 'タグ3'));
-      $('#tags3').val(modules.helper.formatTag($('#tags3').val()));
-
-      $('#tag4-name').val(getVal($('#tag4-name').val(), 'タグ4'));
-      $('#tags4').val(modules.helper.formatTag($('#tags4').val()));
+        $(mode).find('[name="name"]').val(getVal($(mode).find('[name="name"]').val(), 'モード' + i));
+        $(mode).find('[name="tags"]').val(modules.helper.formatTag($(mode).find('[name="tags"]').val()));
+      });
 
       function getVal(val, defaultVal){
         if(!val || val.length == 0){ return defaultVal; }
@@ -64,41 +86,23 @@ modules.pages.tag = (function () {
   /**
    * ストレージの状態を画面に反映
    */
-  page.loadSetting = function(){
-    if(!storage.isSet(keys.tag_list)){
-      modules.storage_helper.setDefaultTags(storage);
-      toastr.info('初期値を設定しました。');
-    }
-
-    const tagList = JSON.parse(storage.get(keys.tag_list));
-
-    $('#tag1-name').val(tagList['tag1_name']);
-    $('#tags1').val(tagList['tags1']);
-    $('#tag2-name').val(tagList['tag2_name']);
-    $('#tags2').val(tagList['tags2']);
-    $('#tag3-name').val(tagList['tag3_name']);
-    $('#tags3').val(tagList['tags3']);
-    $('#tag4-name').val(tagList['tag4_name']);
-    $('#tags4').val(tagList['tags4']);
-  }
+  page.loadSetting = function(){}
 
   /**
    * 設定をストレージに保存する
    */
   page.saveSettings = function(){
-    var settings = {
-      tag1_name: $('#tag1-name').val(),
-      tags1: $('#tags1').val(),
-      tag2_name: $('#tag2-name').val(),
-      tags2: $('#tags2').val(),
-      tag3_name: $('#tag3-name').val(),
-      tags3: $('#tags3').val(),
-      tag4_name: $('#tag4-name').val(),
-      tags4: $('#tags4').val(),
-    }
+    const modeList = JSON.parse(storage.get(strageKeys.mode_list));
+
+    modeList.forEach(function(val, i){
+      var mode = $('#mode-' + i);
+      val['name'] = $(mode).find('[name="name"]').val();
+      val['template'] = $(mode).find('[name="template"]').val();
+      val['tags'] = $(mode).find('[name="tags"]').val();
+    });
 
     // 設定の保持
-    storage.set(keys.tag_list, JSON.stringify(settings));
+    storage.set(strageKeys.mode_list, JSON.stringify(modeList));
   }
 
   return page;

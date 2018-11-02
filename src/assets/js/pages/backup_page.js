@@ -36,13 +36,15 @@ modules.pages.backup = (function () {
    */
   page.initAction = function(){
     $('#storage').on('focus', function(){
-      if(modules.helper.execCopy($(this).val())){
+      $(this).select();
+    });
+
+    $('#copy-btn').on('click', function(){
+      if(modules.helper.execCopy($('#storage').val())){
         toastr.success('コピーしました。')
       }else{
         toastr.error('コピーできませんでした。')
       }
-
-      $(this).select();
     });
 
     $('#save-btn').on('click', function(){

@@ -73,7 +73,7 @@ modules.pages.index = (function () {
       $('#char-length').text($(this).val().length);
     });
 
-    $('#tag-list').on('change', function() {
+    $('#mode-list').on('change', function() {
       var selected = $(this).val();
       $('#tags').val($('#tag-' + selected).val());
       $('#template-msg').val($('#template-msg-' + selected).val());
@@ -81,39 +81,42 @@ modules.pages.index = (function () {
 
     $('#make-msg').on('focus', function(){
       this.select();
-      // FIXME: クリップボードに改行を含んでコピーできない。
-      // if(modules.helper.execCopy($(this).val())){
-      //   toastr.success('コピーしました。')
-      // }else{
-      //   toastr.error('コピーできませんでした。')
-      // }
     });
+
+    $('#copy-btn').on('click', function(){
+      if(modules.helper.execCopy($('#make-msg').val())){
+        toastr.success('コピーしました。')
+      }else{
+        toastr.error('コピーできませんでした。')
+      }
+    })
+
   };
 
   /**
    * ストレージの状態を画面に反映
    */
   page.loadSetting = function(){
-    if(!storage.isSet(keys.type_list)){
+    if(!storage.isSet(keys.mode_list)){
       modules.storage_helper.setDefaultTypes(storage);
       toastr.info('タグリストに初期値を設定しました。');
     }
-    const rawtagList = JSON.parse(storage.get(keys.type_list));
+    const rawMagList = JSON.parse(storage.get(keys.mode_list));
 
-    var typeList = {};
-    rawtagList.forEach(function(val, i){
-      typeList[String(i)] = val['name'];
+    var modeList = {};
+    rawMagList.forEach(function(val, i){
+      modeList[String(i)] = val['name'];
 
-      var tagId = '#tag-' + String(i);
-      $('#page-wrapper').html('<input type="hidden" name="' + tagId + '" id="' + tagId + '">');
-      $(tagId).val(val['name']);
+      var tagId = 'tag-' + String(i);
+      $('#page-wrapper').append('<input type="hidden" name="' + tagId + '" id="' + tagId + '">');
+      $('#' + tagId).val(val['name']);
 
-      var templateId = '#template-msg-' + String(i);
-      $('#page-wrapper').html('<input type="hidden" name="' + templateId + '" id="' + templateId + '">');
-      $(templateId).val(val['template']);
+      var templateId = 'template-msg-' + String(i);
+      $('#page-wrapper').append('<input type="hidden" name="' + templateId + '" id="' + templateId + '">');
+      $('#' + templateId).val(val['template']);
     })
 
-    page.createSelectBox(typeList, 'tag-list', '0');
+    page.createSelectBox(modeList, 'mode-list', '0');
 
     if(!storage.isSet(keys.settings)){
       modules.storage_helper.setDefaultSettings(storage);
@@ -123,14 +126,12 @@ modules.pages.index = (function () {
     const settings = JSON.parse(storage.get(keys.settings));
     $('#new-line').val(settings['new_line']);
     $('#char-length').text(settings['new_line'].length);
-
-    $('#tag-list').val(settings['type_list']);
-    $('#select-tag-num').val(settings['select_tag_num']);
+    $('#mode-list').val(settings['mode_list_num']);
     $('#tag-per-line').prop("checked", settings['tag_per_line']);
     $('#blank-chk').prop("checked", settings['blank_chk']);
 
-    $('#tags').val($('#tag-' + settings['type_list']).val());
-    $('#template-msg').val($('#template-msg-' + settings['type_list']).val());
+    $('#tags').val($('#tag-' + settings['mode_list_num']).val());
+    $('#template-msg').val($('#template-msg-' + settings['mode_list_num']).val());
 
 
     $('#emoji').val(settings['emoji']);
@@ -160,8 +161,7 @@ modules.pages.index = (function () {
   page.saveSettings = function(){
     var settings = {
       new_line: $('#new-line').val(),
-      type_list: $('#tag-list').val(),
-      select_tag_num: $('#select-tag-num').val(),
+      mode_list_num: $('#mode-list').val(),
       tag_per_line: $('#tag-per-line').prop('checked'),
       blank_chk: $('#blank-chk').prop('checked'),
       emoji: modules.helper.excludeBlank($('#emoji').val()),
@@ -175,20 +175,20 @@ modules.pages.index = (function () {
    * タグをストレージに保存する
    */
   page.updateTags = function(){
-    const typeList = JSON.parse(storage.get(keys.type_list));
+    const modeList = JSON.parse(storage.get(keys.mode_list));
 
     var strTags = modules.helper.formatTag($('#tags').val());
 
-    var typeNum = parseInt($('#tag-list').val());
-    typeList.forEach(function(val, i){
-      if(i == typeNum){
+    var modeNum = parseInt($('#mode-list').val());
+    modeList.forEach(function(val, i){
+      if(i == modeNum){
         val['template'] = $('#template-msg').val();
         val['tags'] = strTags;
       }
     })
 
     // 設定の保持
-    storage.set(keys.type_list, JSON.stringify(tagList));
+    storage.set(keys.mode_list, JSON.stringify(modeList));
   }
 
   /**
@@ -218,18 +218,6 @@ modules.pages.index = (function () {
     var rawTagsStr = $('#tags').val();
     rawTagsStr = modules.helper.formatTag(rawTagsStr);
     var tags = null;
-
-    // FIXME: 多分この処理は必要ない？
-    // if(!storage.isSet(keys.type_list)){
-    //   var selectTag = parseInt($('#tag-list').val());
-
-    //   const tagList = JSON.parse(storage.get(keys.type_list));
-    //   typeList.forEach(function(val, i){
-    //     if(i == selectTag){
-    //       tags = tagList['tags'];
-    //     }
-    //   });
-    // }
 
     tags = rawTagsStr.substring(1, rawTagsStr.length).split('#');
 
