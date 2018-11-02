@@ -42,6 +42,18 @@ modules.storage_helper = (function () {
   }
 
   /**
+   * バージョンの検証
+   */
+  module.validVersion = function(storage){
+    var version = JSON.parse(storage.get(module.keys.settings)).version;
+    if(!version || version == module.versions.v1_0_0) {
+      var jsonStr = JSON.stringify(storage.get(modules.storage_helper.namespace));
+      modules.version_helper(jsonStr);
+    }
+  }
+
+
+  /**
    * ローカルストレージを安全に取り出す
    */
   module.initData = function(storage){
@@ -55,6 +67,7 @@ modules.storage_helper = (function () {
    */
   module.setDefaultSettings = function(storage){
     var data = {
+      version: module.version,
       new_line: "・",
       mode_list_num: "0",
       tag_per_line: false,

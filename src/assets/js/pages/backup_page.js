@@ -10,6 +10,7 @@ modules.pages.backup = (function () {
   var storage = null;
   try{
     storage = $.localStorage;
+    // modules.storage_helper.validVersion(storage);
   }catch(e){
     console.log(e);
     toastr.error('ローカルストレージが使用できないため、機能が正しく動きません。');
