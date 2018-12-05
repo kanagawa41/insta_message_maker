@@ -16,7 +16,9 @@
     "url": "https://github.com/kanagawa41/insta_message_maker/issues"
   },
   "homepage": "https://github.com/kanagawa41/insta_message_maker#readme",
-  "dependencies": {},
+  "dependencies": {
+    "browser-sync": "^2.26.3"
+  },
   "devDependencies": {
     "autoprefixer": "^9.0.1",
     "css-mqpacker": "^7.0.0",

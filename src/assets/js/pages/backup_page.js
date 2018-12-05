@@ -8,16 +8,19 @@ modules.pages.backup = (function () {
   var page = {}
 
   var storage = null;
-  try{
-    storage = $.localStorage;
-  }catch(e){
-    console.log(e);
-    toastr.error('ローカルストレージが使用できないため、機能が正しく動きません。');
-  }
 
   const keys = modules.storage_helper.keys;
 
   page.init = function(){
+    try{
+      storage = $.localStorage;
+      // modules.storage_helper.validVersion(storage);
+    }catch(e){
+      console.log(e);
+      toastr.error('ローカルストレージが使用できないため、機能が正しく動きません。');
+      return;
+    }
+
     page.initLayout();
 
     page.initAction();
@@ -36,13 +39,15 @@ modules.pages.backup = (function () {
    */
   page.initAction = function(){
     $('#storage').on('focus', function(){
-      if(modules.helper.execCopy($(this).val())){
+      $(this).select();
+    });
+
+    $('#copy-btn').on('click', function(){
+      if(modules.helper.execCopy($('#storage').val())){
         toastr.success('コピーしました。')
       }else{
         toastr.error('コピーできませんでした。')
       }
-
-      $(this).select();
     });
 
     $('#save-btn').on('click', function(){
@@ -65,7 +70,7 @@ modules.pages.backup = (function () {
 
       $('#storage').val(JSON.stringify(storage.get(modules.storage_helper.namespace)));
 
-      toastr.success('ストレージ状態を初期化しました。');
+      toastr.success('ストレージ状態を初期化しました。a');
     });
 
   };

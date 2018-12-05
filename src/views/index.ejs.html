@@ -28,7 +28,7 @@
                       <div class="row gtr-uniform">
                         <div class="col-12">
                           <h3 class="title">Caption<span class="sub-title">##CAP##</span></h4>
-                          <textarea name="msg" id="msg" placeholder="キャプションを入力" rows="3"></textarea>
+                          <textarea name="msg" id="msg" placeholder="キャプションを入力" rows="6"></textarea>
                         </div>
                       </div>
                     </div>
@@ -43,18 +43,17 @@
                     <div id="option-area" style="display: none; margin-top: 0.5em" class="col-12 pad-bottom-m">
                       <div class="row gtr-uniform line-top line-bottom">
                         <div class="col-12">
+                          <h3 class="title">Mode</h4>
+                          <select id="mode-list" class="mar-bottom-s" name="mode-list" ></select>
+                        </div>
+
+                        <div class="col-12">
                           <h3 class="title">Template</h4>
                           <textarea name="template-msg" id="template-msg" placeholder="特殊記号などを含むテンプレートを記入してください。" rows="3"></textarea>
                         </div>
                         <div class="col-12 pad-bottom-s">
                           <h3 class="title">TAG<span class="sub-title">##TAGS##</span></h3 class="title">
                           <input id="tags" class="mar-bottom-s" name="tags" placeholder="シャープ(#)か空白区切りでタグを入力" type="text">
-                          <select id="tag-list" class="mar-bottom-s" name="tag-list" >
-                          </select>
-                          <input type="hidden" name="tag-one" id="tag-one">
-                          <input type="hidden" name="tag-two" id="tag-two">
-                          <input type="hidden" name="tag-three" id="tag-three">
-                          <input type="hidden" name="tag-four" id="tag-four">
                           <input type="checkbox" name="tag-per-line" id="tag-per-line">
                           <label for="tag-per-line" class="mar-bottom-s">改行して表示</label>
 
@@ -81,9 +80,12 @@
                     </div>
                     <div class="col-12" style="padding-bottom: 2em;">
                       <ul class="actions fit" style="margin-bottom: 0.5em;">
-                        <li><a href="#" id="make-btn" class="make-btn button primary fit" onclick="return false;">作成</a></li>
+                        <li><a href="#" id="make-btn" class="button primary fit" onclick="return false;">作成</a></li>
                       </ul>
-                      <textarea name="make-msg" id="make-msg" placeholder="作成されたメッセージ" onclick="this.select();" rows="5"></textarea>
+                      <textarea name="make-msg" id="make-msg" placeholder="作成されたメッセージ" rows="2"></textarea>
+                      <ul class="actions fit" style="margin-top: 1.5em;">
+                        <li><a href="#" id="copy-btn" class="button primary fit" onclick="return false;">コピー</a></li>
+                      </ul>
                     </div>
                   </div>
                 </section>

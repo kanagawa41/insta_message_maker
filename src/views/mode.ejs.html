@@ -6,7 +6,7 @@
 -->
 <html>
   <head>
-    <title>バックアップ | <%= title.jp %></title>
+    <title>タグ | <%= title.jp %></title>
     <%- include('layout/common_head.ejs.html') -%>
   </head>
   <body class="is-preload">
@@ -26,21 +26,27 @@
                     <div class="col-12">
                       <div class="row gtr-uniform">
                         <div class="col-12">
-                          <div class="row">
-
+                          <div id="modes" class="row">
+<!--
                             <div class="col-12" style="padding-bottom: 2em;">
-                              <h3 class="title">ストレージ状態</h3 class="title">
-                              <textarea name="storage" id="storage" rows="3"></textarea>
+                              <h3 class="title">Template</h4>
+                              <textarea name="template-msg" placeholder="特殊記号などを含むテンプレートを記入してください。" rows="3"></textarea>
+                              <h3 class="title">Tag</h3 class="title">
+                              <div class="row" style="padding-bottom: 0.5em;">
+                                <div class="col-5">
+                                  <input name="tag-name" placeholder="タグ名" type="text">
+                                </div>
+                              </div>
+                              <textarea name="tags" placeholder="シャープ(#)か空白区切りでタグを入力" rows="3"></textarea>
+                              <hr>
                             </div>
-
+ -->
                           </div>
                         </div>
 
                         <div class="col-12" style="padding-bottom: 2em;">
                           <ul class="actions fit">
-                            <li><a href="#" id="copy-btn" class="button primary fit" onclick="return false;">コピー</a></li>
-                            <li><a href="#" id="save-btn" class="button primary fit" onclick="return false;">保存</a></li>
-                            <li><a href="#" id="clear-btn" class="button fit" onclick="return false;">初期化</a></li>
+                            <li><a href="#" id="regist-btn" class="make-btn button primary fit" onclick="return false;">登録</a></li>
                           </ul>
                         </div>
 
@@ -62,7 +68,7 @@
 
       <script>
         (function($) {
-          modules.pages.backup.init();
+          modules.pages.mode.init();
         })(jQuery);
       </script>
 
